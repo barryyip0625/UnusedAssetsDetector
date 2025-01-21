@@ -1,3 +1,4 @@
-Assets/UnusedAssetsDetector/LICENSE
-Assets/UnusedAssetsDetector/README.md
-Assets/UnusedAssetsDetector/package.json
+Assets/BY Utils/UnusedAssetsDetector/LICENSE
+Assets/BY Utils/UnusedAssetsDetector/README.md
+Assets/BY Utils/UnusedAssetsDetector/package.json
+Assets/BY Utils/UnusedAssetsDetector/README_ZH.md
