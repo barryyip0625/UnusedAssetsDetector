@@ -32,6 +32,7 @@ The whitelist feature allows users to exclude certain assets or folders from det
 
 ## Notes
 - Use the delete function with caution, as deleted assets cannot be recovered.
+- The demo assets are using Unity's built-in render pipeline
 
 ## Contribution
 Contributions to improve this tool are welcome. Please participate by submitting pull requests or reporting issues.
