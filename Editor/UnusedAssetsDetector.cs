@@ -12,7 +12,7 @@ namespace BYUtils.AssetsManagement
         private string selectedFolder = null;
         private Vector2 folderScrollPos;
         private Vector2 assetScrollPos;
-        private bool showAsList = true; // 默認顯示為列表
+        private bool showAsList = true; // Default to show as list
         private HashSet<string> whitelist = new HashSet<string>();
         private string whitelistFilePath;
 
@@ -24,22 +24,22 @@ namespace BYUtils.AssetsManagement
         
         private void OnEnable()
         {
-            // 獲取腳本所在目錄並設置白名單文件路徑
+            // Get the script directory and set the whitelist file path
             string scriptPath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this));
             string directory = System.IO.Path.GetDirectoryName(scriptPath);
             whitelistFilePath = System.IO.Path.Combine(directory, "whitelist.txt");
 
-            LoadWhitelist(); // 啟動時加載白名單
+            LoadWhitelist(); // Load whitelist on startup
         }
 
         private void OnGUI()
         {
             if (GUILayout.Button("Find Unused Assets"))
             {
-                LoadWhitelist(); // 每次查找前重新加載白名單
+                LoadWhitelist(); // Reload whitelist before each search
                 FindUnusedAssets();
                 
-                // 顯示第一個文件夾
+                // Display the first folder
                 if (folderAssetsMap.Keys.Count > 0)
                 {
                     selectedFolder = folderAssetsMap.Keys.OrderBy(f => f).First();
@@ -52,8 +52,8 @@ namespace BYUtils.AssetsManagement
             DrawAssetList();
             EditorGUILayout.EndHorizontal();
 
-            // 將按鈕移動到面板底部
-            GUILayout.FlexibleSpace(); // 添加彈性空間
+            // Move buttons to the bottom of the panel
+            GUILayout.FlexibleSpace();
             EditorGUILayout.BeginHorizontal();
             
             if (GUILayout.Button("Add Asset to Whitelist", GUILayout.Width(200)))
@@ -63,8 +63,8 @@ namespace BYUtils.AssetsManagement
                 {
                     path = "Assets" + path.Substring(Application.dataPath.Length);
                     whitelist.Add(path);
-                    SaveWhitelist(); // 保存白名單
-                    FindUnusedAssets(); // 重新查找未使用資產以刷新顯示
+                    SaveWhitelist(); // Save whitelist
+                    FindUnusedAssets(); // Refresh display by re-finding unused assets
                 }
             }
 
@@ -75,12 +75,12 @@ namespace BYUtils.AssetsManagement
                 {
                     path = "Assets" + path.Substring(Application.dataPath.Length);
                     whitelist.Add(path);
-                    SaveWhitelist(); // 保存白名單
-                    FindUnusedAssets(); // 重新查找未使用資產以刷新顯示
+                    SaveWhitelist(); // Save whitelist
+                    FindUnusedAssets(); // Refresh display by re-finding unused assets
                 }
             }
 
-            GUILayout.FlexibleSpace(); // 在按鈕之間添加彈性空間
+            GUILayout.FlexibleSpace();
 
             if (GUILayout.Button("Show as List", GUILayout.Width(100)))
             {
@@ -95,12 +95,12 @@ namespace BYUtils.AssetsManagement
 
         private void DrawFolderHierarchy()
         {
-            float folderWidth = EditorGUIUtility.currentViewWidth * 0.25f; // 設置為窗口寬度的 25%
+            float folderWidth = EditorGUIUtility.currentViewWidth * 0.25f; // Set to 25% of window width
             folderScrollPos = EditorGUILayout.BeginScrollView(folderScrollPos, GUILayout.Width(folderWidth), GUILayout.ExpandHeight(true));
             EditorGUILayout.BeginVertical();
             foreach (var folder in folderAssetsMap.Keys.OrderBy(f => f))
             {
-                if (!IsInWhitelist(folder)) // 過濾掉白名單中的文件夾
+                if (!IsInWhitelist(folder)) // Filter out folders in the whitelist
                 {
                     DrawFolderItem(folder);
                 }
@@ -114,9 +114,9 @@ namespace BYUtils.AssetsManagement
             int indentLevel = folder.Count(c => c == '/');
             EditorGUILayout.BeginHorizontal();
             
-            // 添加左邊距
-            int marginLeft = 10; // 設置左邊距的大小
-            GUILayout.Space(indentLevel * 5 + marginLeft); // 增加左邊距
+            // Add left margin
+            int marginLeft = 10;
+            GUILayout.Space(indentLevel * 5 + marginLeft);
             
             GUIStyle style = new GUIStyle(EditorStyles.label);
             if (folder == selectedFolder)
@@ -126,9 +126,9 @@ namespace BYUtils.AssetsManagement
             }
             GUIContent content = new GUIContent(System.IO.Path.GetFileName(folder), EditorGUIUtility.IconContent("Folder Icon").image);
             
-            // 設置按鈕寬度與文件夾層次結構寬度相匹配，並考慮縮進
-            float folderWidth = EditorGUIUtility.currentViewWidth * 0.25f; // 與 DrawFolderHierarchy 中的寬度計算一致
-            float buttonWidth = folderWidth - indentLevel * 5 - marginLeft - 10; // 減去縮進、左邊距和額外的空間
+            // Set button width to match folder hierarchy width, considering indentation
+            float folderWidth = EditorGUIUtility.currentViewWidth * 0.25f;
+            float buttonWidth = folderWidth - indentLevel * 5 - marginLeft - 10;
             if (GUILayout.Button(content, style, GUILayout.Height(16), GUILayout.Width(buttonWidth)))
             {
                 selectedFolder = folder;
@@ -151,7 +151,7 @@ namespace BYUtils.AssetsManagement
             {
                 GUILayout.Label("Unused Assets in " + selectedFolder + ":", EditorStyles.boldLabel);
 
-                // 創建資產列表的副本以避免修改時的錯誤
+                // Create a copy of the asset list to avoid errors when modifying
                 var assets = new List<string>(folderAssetsMap[selectedFolder]);
 
                 if (showAsList)
@@ -163,8 +163,8 @@ namespace BYUtils.AssetsManagement
                 }
                 else
                 {
-                    int itemWidth = 110; // 每個項目的寬度
-                    int itemMargin = 20; // 每個項目之間的間距
+                    int itemWidth = 110;
+                    int itemMargin = 20;
                     int itemsPerRow = Mathf.FloorToInt((EditorGUIUtility.currentViewWidth - itemWidth * 1.5f - itemMargin) / (itemWidth));
                     int currentItem = 0;
 
@@ -192,15 +192,15 @@ namespace BYUtils.AssetsManagement
         {
             EditorGUILayout.BeginHorizontal("box");
             
-            // 嘗試獲取資產的預覽圖像
+            // Try to get the asset's preview image
             Texture2D previewTexture = AssetPreview.GetAssetPreview(AssetDatabase.LoadAssetAtPath<Object>(asset));
             if (previewTexture == null)
             {
-                // 如果沒有預覽圖像，則使用小縮略圖
+                // Use a mini thumbnail if no preview image is available
                 previewTexture = AssetPreview.GetMiniThumbnail(AssetDatabase.LoadAssetAtPath<Object>(asset));
             }
             
-            // 顯示資產圖標或預覽
+            // Display asset icon or preview
             if (GUILayout.Button(previewTexture, GUILayout.Width(50), GUILayout.Height(50)))
             {
                 PingAsset(asset);
@@ -221,24 +221,24 @@ namespace BYUtils.AssetsManagement
         {
             EditorGUILayout.BeginVertical("box", GUILayout.Width(100), GUILayout.Height(120));
             
-            // 嘗試獲取資產的預覽圖像
+            // Try to get the asset's preview image
             Texture2D previewTexture = AssetPreview.GetAssetPreview(AssetDatabase.LoadAssetAtPath<Object>(asset));
             if (previewTexture == null)
             {
-                // 如果沒有預覽圖像，則使用小縮略圖
+                // Use a mini thumbnail if no preview image is available
                 previewTexture = AssetPreview.GetMiniThumbnail(AssetDatabase.LoadAssetAtPath<Object>(asset));
             }
             
-            // 顯示資產圖標或預覽
+            // Display asset icon or preview
             if (GUILayout.Button(previewTexture, GUILayout.Width(100), GUILayout.Height(100)))
             {
                 PingAsset(asset);
             }
             
-            // 顯示資產名稱
+            // Display asset name
             GUILayout.Label(System.IO.Path.GetFileNameWithoutExtension(asset), EditorStyles.label, GUILayout.Width(100));
             
-            // 顯示刪除按鈕
+            // Display delete button
             if (GUILayout.Button("Delete", GUILayout.Width(100)))
             {
                 DeleteAsset(asset);
@@ -277,7 +277,7 @@ namespace BYUtils.AssetsManagement
             {
                 if (!usedAssets.Contains(asset) && asset.StartsWith("Assets/") && 
                     !asset.Contains("/Editor/") && !AssetDatabase.IsValidFolder(asset) &&
-                    !IsInWhitelist(asset)) // 使用新的白名單檢查方法
+                    !IsInWhitelist(asset))
                 {
                     unusedAssets.Add(asset);
                     string folder = System.IO.Path.GetDirectoryName(asset);
@@ -314,7 +314,7 @@ namespace BYUtils.AssetsManagement
                 {
                     folderAssetsMap[folder].Remove(assetPath);
 
-                    // 如果文件夾中的資產列表為空，則移除該文件夾
+                    // Remove the folder if the asset list is empty
                     if (folderAssetsMap[folder].Count == 0)
                     {
                         folderAssetsMap.Remove(folder);
