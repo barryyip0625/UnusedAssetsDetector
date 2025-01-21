@@ -4,6 +4,8 @@
 ## Introduction
 Unused Assets Detector is a Unity editor tool designed to detect unused assets in your project. This tool helps developers clean up their projects by reducing unnecessary resource usage.
 
+![image](https://github.com/user-attachments/assets/122f3fe8-8a13-4335-8860-1dda768f3afc)
+
 ## Features
 - Scans all assets in the project and detects unused ones.
 - Supports adding assets or folders to a whitelist to exclude them from detection.
@@ -11,11 +13,18 @@ Unused Assets Detector is a Unity editor tool designed to detect unused assets i
 - Allows direct deletion of unused assets within the project.
 
 ## Usage
-1. In the Unity editor, navigate to `Tools > BY Utils > Unused Assets Detector` to open the tool window.
+1. In the Unity editor, navigate to `Tools > BY Utils > Unused Assets Detector` to open the tool window. ![image](https://github.com/user-attachments/assets/6d14d3b7-474d-4c59-8985-d75ed184db08)
+
 2. Click the `Find Unused Assets` button to start scanning for unused assets in the project.
 3. Use the folder hierarchy on the left to navigate and view unused assets in each folder.
 4. Click `Add Asset to Whitelist` or `Add Folder to Whitelist` to add assets or folders to the whitelist.
-5. Use `Show as List` or `Show as Grid` to switch view modes.
+5. Use `Show as List` or `Show as Grid` to switch view modes. 
+  * List<br/>
+  ![image](https://github.com/user-attachments/assets/1ece6a0d-b135-4175-8a8d-c51dc4b06036)
+
+  * Grid<br/>
+  ![image](https://github.com/user-attachments/assets/54bb6d8d-93d5-40c6-b27b-36799c196dcc)
+
 6. Click the `Delete` button next to an asset to remove unwanted assets.
 
 ## Whitelist
