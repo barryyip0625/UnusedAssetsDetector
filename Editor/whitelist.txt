@@ -1,0 +1,3 @@
+Assets/UnusedAssetsDetector/LICENSE
+Assets/UnusedAssetsDetector/README.md
+Assets/UnusedAssetsDetector/package.json

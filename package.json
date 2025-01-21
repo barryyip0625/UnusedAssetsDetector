@@ -1,0 +1,29 @@
+{
+    "name": "com.barryy.unused-assets-detector",
+    "version": "1.0.0",
+    "displayName": "UnusedAssetsDetector",
+    "description": "a Unity editor tool designed to detect unused assets in your project. This tool helps developers clean up their projects by reducing unnecessary resource usage",
+    "unity": "2021.3",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/barryyip0625/UnusedAssetsDetector.git"
+    },
+    "keywords": [
+        "unused",
+        "assets",
+        "detector",
+        "unity",
+        "editor",
+        "asset management",
+        "cleanup",
+        "optimization",
+        "project",
+        "tool"
+      ],
+      "author": {
+        "name": "BarryY",
+        "email": "barry99625@gmail.com",
+        "url": "https://github.com/barryyip0625"
+      }
+}
