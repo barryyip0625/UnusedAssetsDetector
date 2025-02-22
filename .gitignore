@@ -73,3 +73,6 @@ crashlytics-build.properties
 
 # Metadata
 *.meta
+
+# Test Prefabs Folder
+/Test Prefabs/
