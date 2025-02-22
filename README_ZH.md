@@ -34,5 +34,9 @@ Unused Assets Detector是一個 Unity 編輯器工具，旨在檢測專案中未
 - 使用刪除功能時請謹慎，因為刪除的資產無法恢復。
 - 示範用的資產使用 Unity 內建的渲染管道
 
+## 安裝
+- 下載[最新版本](https://github.com/barryyip0625/UnusedAssetsDetector/releases)
+- 使用 Unity Package Manager 透過 git URL 進行安裝```https://github.com/barryyip0625/UnusedAssetsDetector.git```
+  
 ## 貢獻
 歡迎對此工具的改進進行貢獻。請通過提交pull requests或報告問題來參與。
