@@ -21,10 +21,12 @@ Unused Assets Detector is a Unity editor tool designed to detect unused assets i
 4. Click `Add Asset to Whitelist` or `Add Folder to Whitelist` to add assets or folders to the whitelist.
 5. Use `Show as List` or `Show as Grid` to switch view modes. 
   * List<br/>
-  ![image](https://github.com/user-attachments/assets/1ece6a0d-b135-4175-8a8d-c51dc4b06036)
+  ![image](https://github.com/user-attachments/assets/8f6d0f60-8b4b-42ed-bb65-2b085690580d)
+
 
   * Grid<br/>
-  ![image](https://github.com/user-attachments/assets/54bb6d8d-93d5-40c6-b27b-36799c196dcc)
+  ![image](https://github.com/user-attachments/assets/3b07bba5-e1f0-40cd-9a06-aaf72b7f7de9)
+
 
 6. Click the `Delete` button next to an asset to remove unwanted assets.
 
