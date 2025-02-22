@@ -34,5 +34,9 @@ The whitelist feature allows users to exclude certain assets or folders from det
 - Use the delete function with caution, as deleted assets cannot be recovered.
 - The demo assets are using Unity's built-in render pipeline
 
+## Installation
+- Download the [latest release package](https://github.com/barryyip0625/UnusedAssetsDetector/releases)
+- Install with Unity Package Manager via git URL ```https://github.com/barryyip0625/UnusedAssetsDetector.git```
+
 ## Contribution
 Contributions to improve this tool are welcome. Please participate by submitting pull requests or reporting issues.
