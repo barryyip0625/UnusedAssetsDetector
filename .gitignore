@@ -71,8 +71,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-# Metadata
-*.meta
-
 # Test Prefabs Folder
 /Test Prefabs/
