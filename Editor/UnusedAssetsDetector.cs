@@ -7,33 +7,55 @@ namespace BYUtils.AssetsManagement
 {
     public class UnusedAssetsDetector : EditorWindow
     {
+        // List to store unused asset paths
         private List<string> unusedAssets = new List<string>();
+        // Dictionary to map folders to their contained assets
         private Dictionary<string, List<string>> folderAssetsMap = new Dictionary<string, List<string>>();
+        // Currently selected folder in the UI
         private string selectedFolder = null;
+        // Scroll positions for folder and asset views
         private Vector2 folderScrollPos;
         private Vector2 assetScrollPos;
-        private bool showAsList = true; // Default to show as list
+        // Flag to toggle between list and grid view
+        private bool showAsList = true;
+        // Set to store whitelisted asset paths
         private HashSet<string> whitelist = new HashSet<string>();
+        // Path to the whitelist file
         private string whitelistFilePath;
+        // Reference to the WhitelistObject asset
+        private WhitelistObject whitelistObject;
+        // Static path for the WhitelistObject asset
+        private static string whitelistObjectPath;
 
+        // Menu item to open the Unused Assets Detector window
         [MenuItem("Tools/BY Utils/Unused Assets Detector")]
         public static void ShowWindow()
         {
             GetWindow<UnusedAssetsDetector>("Unused Assets Detector");
         }
-        
+
         private void OnEnable()
         {
-            // Get the script directory and set the whitelist file path
-            string scriptPath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this));
-            string directory = System.IO.Path.GetDirectoryName(scriptPath);
-            whitelistFilePath = System.IO.Path.Combine(directory, "whitelist.txt");
-
-            LoadWhitelist(); // Load whitelist on startup
+            // Determine the path for the WhitelistObject once
+            if (string.IsNullOrEmpty(whitelistObjectPath))
+            {
+                // Get the path of the current script
+                string scriptPath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this));
+                // Get the directory of the script
+                string directory = System.IO.Path.GetDirectoryName(scriptPath);
+                // Get the parent directory of the current directory
+                string parentDirectory = System.IO.Path.GetDirectoryName(directory);
+                // Set the path for the Whitelist.asset in the parent directory
+                whitelistObjectPath = System.IO.Path.Combine(parentDirectory, "Whitelist.asset");
+            }
+            
+            // Load the whitelist data when the editor window is enabled
+            LoadWhitelist();
         }
 
         private void OnGUI()
         {
+            // Button to find unused assets
             if (GUILayout.Button("Find Unused Assets"))
             {
                 LoadWhitelist(); // Reload whitelist before each search
@@ -46,6 +68,7 @@ namespace BYUtils.AssetsManagement
                 }
             }
 
+            // Layout for folder and asset views
             EditorGUILayout.BeginHorizontal();
             DrawFolderHierarchy();
             DrawVerticalSeparator();
@@ -56,6 +79,7 @@ namespace BYUtils.AssetsManagement
             GUILayout.FlexibleSpace();
             EditorGUILayout.BeginHorizontal();
             
+            // Button to add an asset to the whitelist
             if (GUILayout.Button("Add Asset to Whitelist", GUILayout.Width(200)))
             {
                 string path = EditorUtility.OpenFilePanel("Select Asset", "Assets", "");
@@ -68,6 +92,7 @@ namespace BYUtils.AssetsManagement
                 }
             }
 
+            // Button to add a folder to the whitelist
             if (GUILayout.Button("Add Folder to Whitelist", GUILayout.Width(200)))
             {
                 string path = EditorUtility.OpenFolderPanel("Select Folder", "Assets", "");
@@ -82,6 +107,7 @@ namespace BYUtils.AssetsManagement
 
             GUILayout.FlexibleSpace();
 
+            // Buttons to toggle between list and grid view
             if (GUILayout.Button("Show as List", GUILayout.Width(100)))
             {
                 showAsList = true;
@@ -95,7 +121,8 @@ namespace BYUtils.AssetsManagement
 
         private void DrawFolderHierarchy()
         {
-            float folderWidth = EditorGUIUtility.currentViewWidth * 0.25f; // Set to 25% of window width
+            // Set folder view width to 25% of window width
+            float folderWidth = EditorGUIUtility.currentViewWidth * 0.25f;
             folderScrollPos = EditorGUILayout.BeginScrollView(folderScrollPos, GUILayout.Width(folderWidth), GUILayout.ExpandHeight(true));
             EditorGUILayout.BeginVertical();
             foreach (var folder in folderAssetsMap.Keys.OrderBy(f => f))
@@ -111,6 +138,7 @@ namespace BYUtils.AssetsManagement
 
         private void DrawFolderItem(string folder)
         {
+            // Calculate indentation level based on folder depth
             int indentLevel = folder.Count(c => c == '/');
             EditorGUILayout.BeginHorizontal();
             
@@ -124,20 +152,40 @@ namespace BYUtils.AssetsManagement
                 style.normal.textColor = Color.white;
                 style.normal.background = Texture2D.grayTexture;
             }
-            GUIContent content = new GUIContent(System.IO.Path.GetFileName(folder), EditorGUIUtility.IconContent("Folder Icon").image);
             
-            // Set button width to match folder hierarchy width, considering indentation
+            // Adjust the folder name to fit within the view
+            string displayFolderName = folder;
             float folderWidth = EditorGUIUtility.currentViewWidth * 0.25f;
             float buttonWidth = folderWidth - indentLevel * 5 - marginLeft - 10;
+            if (style.CalcSize(new GUIContent(displayFolderName)).x > buttonWidth)
+            {
+                displayFolderName = "..." + System.IO.Path.GetFileName(folder);
+            }
+            
+            // Display folder icon and name
+            GUIContent content = new GUIContent(displayFolderName, EditorGUIUtility.IconContent("Folder Icon").image);
+            
             if (GUILayout.Button(content, style, GUILayout.Height(16), GUILayout.Width(buttonWidth)))
             {
                 selectedFolder = folder;
+                PingFolder(folder); // Ping the folder in the project view
             }
             EditorGUILayout.EndHorizontal();
         }
 
+        private void PingFolder(string folderPath)
+        {
+            // Ping the folder in the project view
+            Object folderObject = AssetDatabase.LoadAssetAtPath<Object>(folderPath);
+            if (folderObject != null)
+            {
+                EditorGUIUtility.PingObject(folderObject);
+            }
+        }
+
         private void DrawVerticalSeparator()
         {
+            // Draw a vertical separator between folder and asset views
             EditorGUILayout.BeginVertical(GUILayout.Width(5));
             GUILayout.Box("", GUILayout.ExpandHeight(true), GUILayout.Width(5));
             EditorGUILayout.EndVertical();
@@ -145,6 +193,7 @@ namespace BYUtils.AssetsManagement
 
         private void DrawAssetList()
         {
+            // Display the list of unused assets in the selected folder
             assetScrollPos = EditorGUILayout.BeginScrollView(assetScrollPos);
             EditorGUILayout.BeginVertical();
             if (selectedFolder != null && folderAssetsMap.ContainsKey(selectedFolder))
@@ -190,6 +239,7 @@ namespace BYUtils.AssetsManagement
 
         private void DrawAssetItem(string asset)
         {
+            // Draw each asset as a list item with a preview and delete button
             EditorGUILayout.BeginHorizontal("box");
             
             // Try to get the asset's preview image
@@ -219,6 +269,7 @@ namespace BYUtils.AssetsManagement
 
         private void DrawAssetItemAsIcon(string asset)
         {
+            // Draw each asset as an icon with a delete button
             EditorGUILayout.BeginVertical("box", GUILayout.Width(100), GUILayout.Height(120));
             
             // Try to get the asset's preview image
@@ -249,18 +300,21 @@ namespace BYUtils.AssetsManagement
 
         private void PingAsset(string assetPath)
         {
+            // Ping the asset in the project view
             Object obj = AssetDatabase.LoadAssetAtPath<Object>(assetPath);
             EditorGUIUtility.PingObject(obj);
         }
 
         private void FindUnusedAssets()
         {
+            // Clear previous results
             unusedAssets.Clear();
             folderAssetsMap.Clear();
+            // Get all asset paths in the project
             string[] allAssets = AssetDatabase.GetAllAssetPaths();
             HashSet<string> usedAssets = new HashSet<string>();
 
-            // Collect all used assets
+            // Collect all used assets from scenes
             string[] allScenes = AssetDatabase.FindAssets("t:Scene");
             foreach (var sceneGUID in allScenes)
             {
@@ -292,6 +346,7 @@ namespace BYUtils.AssetsManagement
 
         private bool IsInWhitelist(string assetPath)
         {
+            // Check if the asset path is in the whitelist
             foreach (var path in whitelist)
             {
                 if (assetPath.StartsWith(path))
@@ -304,6 +359,7 @@ namespace BYUtils.AssetsManagement
 
         private void DeleteAsset(string assetPath)
         {
+            // Confirm and delete the asset
             if (EditorUtility.DisplayDialog("Delete Asset", "Are you sure you want to delete " + assetPath + "?", "Yes", "No"))
             {
                 AssetDatabase.DeleteAsset(assetPath);
@@ -325,22 +381,57 @@ namespace BYUtils.AssetsManagement
 
         public static void Refresh()
         {
-            var window = GetWindow<UnusedAssetsDetector>("Unused Assets Finder");
-            window.FindUnusedAssets();
-            window.Repaint();
+            // Check if the window is already open
+            if (EditorWindow.HasOpenInstances<UnusedAssetsDetector>())
+            {
+                var window = GetWindow<UnusedAssetsDetector>("Unused Assets Finder");
+                
+                window.FindUnusedAssets();
+                window.Repaint();
+            }
         }
 
         private void SaveWhitelist()
         {
-            System.IO.File.WriteAllLines(whitelistFilePath, whitelist);
+            // Save the current whitelist to the WhitelistObject
+            if (whitelistObject != null)
+            {
+                whitelistObject.folders = whitelist.Where(path => AssetDatabase.IsValidFolder(path)).ToList();
+                whitelistObject.files = whitelist.Where(path => !AssetDatabase.IsValidFolder(path)).ToList();
+                EditorUtility.SetDirty(whitelistObject);
+                AssetDatabase.SaveAssets();
+            }
         }
 
         private void LoadWhitelist()
         {
-            if (System.IO.File.Exists(whitelistFilePath))
+            // Load the whitelist from the WhitelistObject
+            if (whitelistObject == null)
             {
-                var lines = System.IO.File.ReadAllLines(whitelistFilePath);
-                whitelist = new HashSet<string>(lines);
+                whitelistObject = AssetDatabase.LoadAssetAtPath<WhitelistObject>(whitelistObjectPath);
+                if (whitelistObject == null)
+                {
+                    // Create a new WhitelistObject if it doesn't exist
+                    whitelistObject = ScriptableObject.CreateInstance<WhitelistObject>();
+                    AssetDatabase.CreateAsset(whitelistObject, whitelistObjectPath);
+                    AssetDatabase.SaveAssets();
+                }
+            }
+
+            if (whitelistObject != null)
+            {
+                // Ensure folders and files lists are initialized
+                if (whitelistObject.folders == null)
+                {
+                    whitelistObject.folders = new List<string>();
+                }
+                if (whitelistObject.files == null)
+                {
+                    whitelistObject.files = new List<string>();
+                }
+
+                // Combine folders and files into a single whitelist set
+                whitelist = new HashSet<string>(whitelistObject.folders.Concat(whitelistObject.files));
             }
         }
     } 
